@@ -2,12 +2,10 @@ package io.micronaut.etcd.client;
 
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;
-import io.micronaut.context.annotation.Factory;
 import java.net.URI;
 import java.util.Collection;
 import javax.inject.Singleton;
 
-@Factory
 public class ClientFactory {
 
   /**
@@ -15,7 +13,6 @@ public class ClientFactory {
    *
    * @return {@link KV}
    */
-  @Singleton
   public KV etcdKVClient(String endpoints) {
     Client client = Client.builder().endpoints(endpoints).build();
     return client.getKVClient();
