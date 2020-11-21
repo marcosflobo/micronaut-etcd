@@ -21,6 +21,9 @@ import java.net.URI;
 import java.util.Collection;
 import javax.inject.Singleton;
 
+/**
+ * Client factory for jetcd clients.
+ */
 public class ClientFactory {
 
   /**

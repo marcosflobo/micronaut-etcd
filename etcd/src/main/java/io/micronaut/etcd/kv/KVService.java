@@ -23,6 +23,9 @@ import io.micronaut.etcd.config.EtcdFactoryConfig;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Service to work with the key/value api of etcd.
+ */
 public class KVService {
 
   private final KV kvClient;
@@ -31,6 +34,13 @@ public class KVService {
     this.kvClient = new ClientFactory().etcdKVClient(config.getEndpoints());
   }
 
+  /**
+   * Gets information from etcd based on the key provided.
+   * @param key
+   * @return {@link ByteSequence}
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
   public ByteSequence get (String key) throws ExecutionException, InterruptedException {
     ByteSequence keyByteSequence = ByteSequence.from(key.getBytes());
     CompletableFuture<GetResponse> getResponseCompletableFuture = kvClient.get(keyByteSequence);
@@ -40,6 +50,5 @@ public class KVService {
     }
     return response.getKvs().get(0).getValue();
   }
-
 
 }

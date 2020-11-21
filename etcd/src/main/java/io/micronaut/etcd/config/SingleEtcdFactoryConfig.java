@@ -18,8 +18,11 @@ package io.micronaut.etcd.config;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 
+/**
+ * Single configuration for etcd.
+ */
 @ConfigurationProperties("etcd")
-public class SingleEtcdFactoryConfig extends EtcdFactoryConfig{
+public class SingleEtcdFactoryConfig extends EtcdFactoryConfig {
 
   public static final String DEFAULT_ENDPOINTS = "http://localhost:2379";
 
