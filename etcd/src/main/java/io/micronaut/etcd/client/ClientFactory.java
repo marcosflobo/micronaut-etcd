@@ -14,7 +14,7 @@ public class ClientFactory {
    * @return {@link KV}
    */
   public KV etcdKVClient(String endpoints) {
-    Client client = Client.builder().endpoints(endpoints).build();
+    Client client = Client.builder().endpoints(endpoints.split(",")).build();
     return client.getKVClient();
   }
 
