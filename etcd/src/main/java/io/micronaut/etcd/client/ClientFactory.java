@@ -26,6 +26,7 @@ public class ClientFactory {
   /**
    * Create a singleton {@link KV} client, based on the string endpoints.
    *
+   * @param endpoints
    * @return {@link KV}
    */
   public KV etcdKVClient(String endpoints) {
@@ -36,6 +37,7 @@ public class ClientFactory {
   /**
    * Create a singleton {@link KV} client, based on the URI endpoints.
    *
+   * @param endpoints
    * @return {@link KV}
    */
   @Singleton
@@ -47,6 +49,7 @@ public class ClientFactory {
   /**
    * Create a singleton {@link KV} client, based on the Collection of URI endpoints.
    *
+   * @param endpoints
    * @return {@link KV}
    */
   @Singleton
