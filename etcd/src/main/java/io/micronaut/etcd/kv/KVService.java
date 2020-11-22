@@ -19,6 +19,7 @@ import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.kv.PutResponse;
+import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.micronaut.etcd.client.ClientFactory;
 import io.micronaut.etcd.config.EtcdFactoryConfig;
@@ -38,14 +39,29 @@ public class KVService {
 
   /**
    * Gets information from etcd based on the key provided.
-   * @param key
+   * @param key The key used to get a value
    * @return {@link ByteSequence}
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence get (String key) throws ExecutionException, InterruptedException {
+  public ByteSequence get (String key) throws ExecutionException,
+      InterruptedException {
+    return get(key, GetOption.DEFAULT);
+  }
+
+  /**
+   * Gets information from etcd based on the key provided.
+   * @param key The key used to get a value
+   * @param getOption Options for GET action
+   * @return {@link ByteSequence}
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public ByteSequence get (String key, GetOption getOption) throws ExecutionException,
+      InterruptedException {
     ByteSequence keyByteSequence = ByteSequence.from(key.getBytes());
-    CompletableFuture<GetResponse> getResponseCompletableFuture = kvClient.get(keyByteSequence);
+    CompletableFuture<GetResponse> getResponseCompletableFuture = kvClient.get(keyByteSequence,
+        getOption);
     GetResponse response = getResponseCompletableFuture.get();
     if (response.getKvs().isEmpty()) {
       return null;
@@ -55,24 +71,23 @@ public class KVService {
 
   /**
    *
-   * @param key The key usd to store the value
+   * @param key The key used to store the value
    * @param value The value to store
-   * @return ByteSequence
+   * @return {@link ByteSequence}
    * @throws ExecutionException
    * @throws InterruptedException
    */
   public ByteSequence put (ByteSequence key, ByteSequence value)
       throws ExecutionException, InterruptedException {
-    CompletableFuture<PutResponse> completableFuture = kvClient.put(key, value);
-    return getValueFromCompletableFuturePutResponse(completableFuture);
+    return put(key, value, PutOption.DEFAULT);
   }
 
   /**
    *
-   * @param key The key usd to store the value
+   * @param key The key used to store the value
    * @param value The value to store
    * @param putOption The options used to put the key/value
-   * @return ByteSequence
+   * @return {@link ByteSequence}
    * @throws ExecutionException
    * @throws InterruptedException
    */
@@ -85,7 +100,7 @@ public class KVService {
   /**
    *
    * @param completableFuture The object handle the PUT response
-   * @return ByteSequence
+   * @return {@link ByteSequence}
    * @throws ExecutionException
    * @throws InterruptedException
    */
