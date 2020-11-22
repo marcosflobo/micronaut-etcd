@@ -9,6 +9,9 @@ import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.google.common.base.Charsets.UTF_8;
+
+
 class KVServiceTest extends Specification {
 
     @Shared
@@ -21,6 +24,7 @@ class KVServiceTest extends Specification {
     def "Get service works with empty storage"() {
         given:
         etcdContainer.start()
+        String key = "foo"
 
         and:
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
@@ -29,7 +33,7 @@ class KVServiceTest extends Specification {
         ByteSequence expected = null
 
         when:
-        ByteSequence ret = kvService.get("foo")
+        ByteSequence ret = kvService.get(ByteSequence.from(key, UTF_8))
 
         then:
         expected ==  ret
@@ -53,7 +57,7 @@ class KVServiceTest extends Specification {
         when:
         ByteSequence retFromPut = kvService.put(ByteSequence.from(key.getBytes()),
                 ByteSequence.from(BigInteger.valueOf(value).toByteArray()))
-        ByteSequence ret = kvService.get(key)
+        ByteSequence ret = kvService.get(ByteSequence.from(key, UTF_8))
 
         then:
         expectedFromPut ==  retFromPut
@@ -76,9 +80,9 @@ class KVServiceTest extends Specification {
         ByteSequence expectedFromPut = null
 
         when:
-        ByteSequence retFromPut = kvService.put(ByteSequence.from(key.getBytes()),
-                ByteSequence.from(value.getBytes()))
-        ByteSequence ret = kvService.get(key)
+        ByteSequence retFromPut = kvService.put(ByteSequence.from(key, UTF_8),
+                ByteSequence.from(value, UTF_8))
+        ByteSequence ret = kvService.get(ByteSequence.from(key, UTF_8))
 
         then:
         expectedFromPut ==  retFromPut
@@ -110,7 +114,7 @@ class KVServiceTest extends Specification {
             ByteSequence retFromPut = kvService.put(ByteSequence.from(tempKey.getBytes()),
                     ByteSequence.from(tempValue.getBytes()))
             retFromPutList.add(retFromPut)
-            retFromGetList.add(kvService.get(tempKey))
+            retFromGetList.add(kvService.get(ByteSequence.from(tempKey, UTF_8)))
         }
 
         then:

@@ -44,7 +44,7 @@ public class KVService {
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence get (String key) throws ExecutionException,
+  public ByteSequence get (ByteSequence key) throws ExecutionException,
       InterruptedException {
     return get(key, GetOption.DEFAULT);
   }
@@ -57,11 +57,9 @@ public class KVService {
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence get (String key, GetOption getOption) throws ExecutionException,
+  public ByteSequence get (ByteSequence key, GetOption getOption) throws ExecutionException,
       InterruptedException {
-    ByteSequence keyByteSequence = ByteSequence.from(key.getBytes());
-    CompletableFuture<GetResponse> getResponseCompletableFuture = kvClient.get(keyByteSequence,
-        getOption);
+    CompletableFuture<GetResponse> getResponseCompletableFuture = kvClient.get(key, getOption);
     GetResponse response = getResponseCompletableFuture.get();
     if (response.getKvs().isEmpty()) {
       return null;
