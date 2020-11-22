@@ -18,6 +18,8 @@ package io.micronaut.etcd.kv;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.kv.GetResponse;
+import io.etcd.jetcd.kv.PutResponse;
+import io.etcd.jetcd.options.PutOption;
 import io.micronaut.etcd.client.ClientFactory;
 import io.micronaut.etcd.config.EtcdFactoryConfig;
 import java.util.concurrent.CompletableFuture;
@@ -49,6 +51,51 @@ public class KVService {
       return null;
     }
     return response.getKvs().get(0).getValue();
+  }
+
+  /**
+   *
+   * @param key The key usd to store the value
+   * @param value The value to store
+   * @return ByteSequence
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public ByteSequence put (ByteSequence key, ByteSequence value)
+      throws ExecutionException, InterruptedException {
+    CompletableFuture<PutResponse> completableFuture = kvClient.put(key, value);
+    return getValueFromCompletableFuturePutResponse(completableFuture);
+  }
+
+  /**
+   *
+   * @param key The key usd to store the value
+   * @param value The value to store
+   * @param putOption The options used to put the key/value
+   * @return ByteSequence
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public ByteSequence put (ByteSequence key, ByteSequence value, PutOption putOption)
+      throws ExecutionException, InterruptedException {
+    CompletableFuture<PutResponse> completableFuture = kvClient.put(key, value, putOption);
+    return getValueFromCompletableFuturePutResponse(completableFuture);
+  }
+
+  /**
+   *
+   * @param completableFuture The object handle the PUT response
+   * @return ByteSequence
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  private ByteSequence getValueFromCompletableFuturePutResponse (CompletableFuture<PutResponse> completableFuture)
+      throws ExecutionException, InterruptedException {
+    PutResponse response = completableFuture.get();
+    if (!response.hasPrevKv()) {
+      return null;
+    }
+    return response.getPrevKv().getValue();
   }
 
 }

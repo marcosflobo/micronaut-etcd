@@ -32,8 +32,8 @@ public class ClientFactory {
    * @param endpoints
    * @return {@link KV}
    */
-  public KV etcdKVClient(String endpoints) {
-    Client client = Client.builder().endpoints(endpoints.split(",")).build();
+  public KV etcdKVClient(String... endpoints) {
+    Client client = Client.builder().endpoints(endpoints).build();
     return client.getKVClient();
   }
 
@@ -44,7 +44,7 @@ public class ClientFactory {
    * @return {@link KV}
    */
   @Singleton
-  public KV etcdKVClient(URI endpoints) {
+  public KV etcdKVClient(URI... endpoints) {
     Client client = Client.builder().endpoints(endpoints).build();
     return client.getKVClient();
   }

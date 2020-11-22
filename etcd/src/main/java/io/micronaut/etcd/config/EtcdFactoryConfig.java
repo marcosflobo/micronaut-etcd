@@ -21,9 +21,13 @@ import io.micronaut.context.annotation.Parameter;
  * Etcd configuration.
  */
 public abstract class EtcdFactoryConfig {
-  private String endpoints;
+  private String[] endpoints;
 
-  public EtcdFactoryConfig(@Parameter String endpoints) {
+  /**
+   * Constructor.
+   * @param endpoints etcd server endpoints, at least one
+   */
+  public EtcdFactoryConfig(@Parameter String... endpoints) {
     this.endpoints = endpoints;
   }
 
@@ -31,15 +35,15 @@ public abstract class EtcdFactoryConfig {
    * Returns the comma-separated endpoints of the etcd cluster.
    * @return {@link String}
    */
-  public String getEndpoints() {
+  public String[] getEndpoints() {
     return endpoints;
   }
 
   /**
    * Sets the comma-separated endpoints of the etcd cluster.
-   * @param endpoints
+   * @param endpoints etcd server endpoints, at least one
    */
-  public void setEndpoints(String endpoints) {
+  public void setEndpoints(String[] endpoints) {
     this.endpoints = endpoints;
   }
 }
