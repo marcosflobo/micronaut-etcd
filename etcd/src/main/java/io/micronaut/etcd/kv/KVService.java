@@ -34,7 +34,7 @@ public class KVService {
   private final KV kvClient;
 
   public KVService(EtcdFactoryConfig config) {
-    this.kvClient = new ClientFactory().etcdKVClient(config.getEndpoints());
+    this.kvClient = new ClientFactory().etcdKVClient(config);
   }
 
   /**

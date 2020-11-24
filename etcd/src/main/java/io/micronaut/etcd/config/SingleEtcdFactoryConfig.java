@@ -17,11 +17,17 @@ package io.micronaut.etcd.config;
 
 
 import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Requires;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
- * Single configuration for etcd.
+ * The default etcd configuration class.
  */
 @ConfigurationProperties("etcd")
+@Requires("etcd")
+@Singleton
+@Named("etcd")
 public class SingleEtcdFactoryConfig extends EtcdFactoryConfig {
 
   public static final String DEFAULT_ENDPOINTS = "http://localhost:2379";

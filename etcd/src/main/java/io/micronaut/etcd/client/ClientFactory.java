@@ -15,8 +15,11 @@
  */
 package io.micronaut.etcd.client;
 
+import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
+import io.etcd.jetcd.ClientBuilder;
 import io.etcd.jetcd.KV;
+import io.micronaut.etcd.config.EtcdFactoryConfig;
 import java.net.URI;
 import java.util.Collection;
 import javax.inject.Singleton;
@@ -24,14 +27,26 @@ import javax.inject.Singleton;
 /**
  * Client factory for jetcd clients.
  */
+@Singleton
 public class ClientFactory {
+
+  /**
+   * Create a KV client {@link KV} base on the configuration injected.
+   * @param config The configuration to connect to the etcd server
+   * @return {@link KV}
+   */
+  public KV etcdKVClient(EtcdFactoryConfig config) {
+    Client client = getClient(config);
+    return client.getKVClient();
+  }
 
   /**
    * Create a singleton {@link KV} client, based on the string endpoints.
    *
-   * @param endpoints
+   * @param endpoints Array of String endpoints
    * @return {@link KV}
    */
+  @Singleton
   public KV etcdKVClient(String... endpoints) {
     Client client = Client.builder().endpoints(endpoints).build();
     return client.getKVClient();
@@ -40,7 +55,7 @@ public class ClientFactory {
   /**
    * Create a singleton {@link KV} client, based on the URI endpoints.
    *
-   * @param endpoints
+   * @param endpoints Array of URI endpoints
    * @return {@link KV}
    */
   @Singleton
@@ -52,13 +67,78 @@ public class ClientFactory {
   /**
    * Create a singleton {@link KV} client, based on the Collection of URI endpoints.
    *
-   * @param endpoints
+   * @param endpoints Collection of URI endpoints
    * @return {@link KV}
    */
   @Singleton
   public KV etcdKVClient(Collection<URI> endpoints) {
     Client client = Client.builder().endpoints(endpoints).build();
     return client.getKVClient();
+  }
+
+  /**
+   * Gets a generic etcd client factory to obtain any of the available etcd clients.
+   * @param config The configuration to connect to the etcd server
+   * @return {@link Client}
+   */
+  private Client getClient(EtcdFactoryConfig config) {
+    ClientBuilder clientBuilder = Client.builder().endpoints(config.getEndpoints());
+    if (config.getUser() != null) {
+      clientBuilder.user(ByteSequence.from(config.getUser().getBytes()));
+    }
+    if (config.getPassword() != null) {
+      clientBuilder.password(ByteSequence.from(config.getPassword().getBytes()));
+    }
+    if (config.getExecutorService() != null) {
+      clientBuilder.executorService(config.getExecutorService());
+    }
+    if (config.getLoadBalancerPolicy() != null) {
+      clientBuilder.loadBalancerPolicy(config.getLoadBalancerPolicy());
+    }
+    if (config.getSslContext() != null) {
+      clientBuilder.sslContext(config.getSslContext());
+    }
+    if (config.getAuthority() != null) {
+      clientBuilder.authority(config.getAuthority());
+    }
+    if (config.getMaxInboundMessageSize() != null) {
+      clientBuilder.maxInboundMessageSize(config.getMaxInboundMessageSize());
+    }
+    if (config.getHeaders() != null) {
+      clientBuilder.headers(config.getHeaders());
+    }
+    if (config.getInterceptors() != null) {
+      clientBuilder.interceptors(config.getInterceptors());
+    }
+    if (config.getNamespace() != null) {
+      clientBuilder.namespace(config.getNamespace());
+    }
+    if (config.getRetryDelay() != 0) {
+      clientBuilder.retryDelay(config.getRetryDelay());
+    }
+    if (config.getRetryMaxDelay() != 0) {
+      clientBuilder.retryMaxDelay(config.getRetryMaxDelay());
+    }
+    if (config.getKeepaliveTimeMs() != 0) {
+      clientBuilder.keepaliveTimeMs(config.getKeepaliveTimeMs());
+    }
+    if (config.getKeepaliveTimeoutMs() != 0) {
+      clientBuilder.keepaliveTimeoutMs(config.getKeepaliveTimeoutMs());
+    }
+    if (config.getKeepaliveWithoutCalls() != null) {
+      clientBuilder.keepaliveWithoutCalls(config.getKeepaliveWithoutCalls());
+    }
+    if (config.getRetryChronoUnit() != null) {
+      clientBuilder.retryChronoUnit(config.getRetryChronoUnit());
+    }
+    if (!config.getRetryMaxDuration().isEmpty()) {
+      clientBuilder.retryMaxDuration(config.getRetryMaxDuration());
+    }
+    if (config.getConnectTimeoutMs() != null) {
+      clientBuilder.connectTimeoutMs(config.getConnectTimeoutMs());
+    }
+    clientBuilder.discovery(config.isDiscovery());
+    return clientBuilder.build();
   }
 
 }
