@@ -57,12 +57,12 @@ jobs:
           cond: ${{ github.repository == 'micronaut-projects/micronaut-core' }}
           if_true: "micronaut-projects/micronaut-docs"
           if_false: ${{ github.repository }}
-      - name: Publish to Github Pages
-        if: success() && github.event_name == 'push' && matrix.java == '8'
-        uses: micronaut-projects/github-pages-deploy-action@master
-        env:
-          TARGET_REPOSITORY: ${{ steps.docs_target.outputs.value }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          BASE_BRANCH: ${{ env.githubBranch }}
-          BRANCH: gh-pages
-          FOLDER: build/docs
+#      - name: Publish to Github Pages
+#        if: success() && github.event_name == 'push' && matrix.java == '8'
+#        uses: micronaut-projects/github-pages-deploy-action@master
+#        env:
+#          TARGET_REPOSITORY: ${{ steps.docs_target.outputs.value }}
+#          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+#          BASE_BRANCH: ${{ env.githubBranch }}
+#          BRANCH: gh-pages
+#          FOLDER: build/docs
