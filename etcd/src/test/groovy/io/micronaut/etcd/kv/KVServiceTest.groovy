@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString
 import io.etcd.jetcd.ByteSequence
 import io.micronaut.etcd.config.EtcdFactoryConfig
 import io.micronaut.etcd.config.SingleEtcdFactoryConfig
+import io.micronaut.etcd.util.ExternalByteSequence
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
 import spock.lang.Shared
@@ -30,10 +31,10 @@ class KVServiceTest extends Specification {
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
         config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(2379)}")
         KVService kvService = new KVService(config)
-        ByteSequence expected = null
+        byte[] expected = null
 
         when:
-        ByteSequence ret = kvService.get(ByteSequence.from(key, UTF_8))
+        byte[] ret = kvService.get(key)
 
         then:
         expected ==  ret

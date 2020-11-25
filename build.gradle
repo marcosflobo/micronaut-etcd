@@ -7,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath "io.micronaut.build:micronaut-gradle-plugins:2.0.11"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
     }
 }
 
@@ -21,3 +22,4 @@ subprojects { Project subproject ->
 
 apply plugin: "io.micronaut.build.docs"
 apply plugin: "io.micronaut.build.dependency-updates"
+apply plugin: 'com.github.johnrengelman.shadow'

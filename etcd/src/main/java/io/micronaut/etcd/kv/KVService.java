@@ -15,6 +15,7 @@
  */
 package io.micronaut.etcd.kv;
 
+import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.kv.GetResponse;
@@ -23,6 +24,7 @@ import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.micronaut.etcd.client.ClientFactory;
 import io.micronaut.etcd.config.EtcdFactoryConfig;
+import io.micronaut.etcd.util.ExternalByteSequence;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -47,6 +49,24 @@ public class KVService {
   public ByteSequence get (ByteSequence key) throws ExecutionException,
       InterruptedException {
     return get(key, GetOption.DEFAULT);
+  }
+
+  public byte[] get (String key)
+      throws ExecutionException, InterruptedException {
+    ByteSequence ret = get(ByteSequence.from(ByteString.copyFrom(key.getBytes())));
+    if (ret == null) {
+      return null;
+    }
+    return ret.getBytes();
+//    ByteString b = ByteString.copyFrom(a);
+//    return new ExternalByteSequence(b);
+  }
+
+  public ExternalByteSequence get (ExternalByteSequence key)
+      throws ExecutionException, InterruptedException {
+    ByteSequence aux = ByteSequence.from(key.getBytes());
+    ByteSequence ret = get(aux);
+    return new ExternalByteSequence(ByteString.copyFrom(ret.getBytes()));
   }
 
   /**

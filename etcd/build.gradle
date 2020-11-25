@@ -4,7 +4,7 @@ dependencies {
 
     api "io.micronaut:micronaut-inject"
     api "io.micronaut:micronaut-inject-java"
-    api "io.etcd:jetcd-core:$jetcdVersion"
+    compile "io.etcd:jetcd-core:$jetcdVersion"
 
     compileOnly "io.micronaut.micrometer:micronaut-micrometer-core"
     compileOnly "io.micronaut:micronaut-management"
@@ -21,4 +21,18 @@ dependencies {
 
 tasks.withType(Test) {
     useJUnitPlatform()
+}
+
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    classifier = 'all'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
 }
