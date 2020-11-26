@@ -1,19 +1,21 @@
 package io.micronaut.etcd.kv
 
-import com.google.protobuf.ByteString
 import io.etcd.jetcd.ByteSequence
 import io.micronaut.etcd.config.EtcdFactoryConfig
 import io.micronaut.etcd.config.SingleEtcdFactoryConfig
-import io.micronaut.etcd.util.ExternalByteSequence
+import io.micronaut.etcd.util.DummyObject
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
+import org.testcontainers.shaded.org.apache.commons.lang.SerializationUtils
 import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.google.common.base.Charsets.UTF_8;
 
 
-class KVServiceTest extends Specification {
+class KVServiceSpec extends Specification {
+
+    int originalPort = 2379
 
     @Shared
     GenericContainer etcdContainer =
@@ -29,7 +31,7 @@ class KVServiceTest extends Specification {
 
         and:
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
-        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(2379)}")
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
         KVService kvService = new KVService(config)
         byte[] expected = null
 
@@ -51,18 +53,39 @@ class KVServiceTest extends Specification {
 
         and:
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
-        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(2379)}")
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
         KVService kvService = new KVService(config)
-        ByteSequence expectedFromPut = null
+        byte[] expectedFromPut = null
 
         when:
-        ByteSequence retFromPut = kvService.put(ByteSequence.from(key.getBytes()),
-                ByteSequence.from(BigInteger.valueOf(value).toByteArray()))
-        ByteSequence ret = kvService.get(ByteSequence.from(key, UTF_8))
+        byte[] retFromPut = kvService.put(key, BigInteger.valueOf(value).toByteArray())
+        byte[] ret = kvService.get(key)
 
         then:
         expectedFromPut ==  retFromPut
-        BigInteger.valueOf(value).toByteArray() == ((ByteString)ret.getAt("byteString")).toByteArray()
+        BigInteger.valueOf(value).toByteArray() == ret
+
+        cleanup:
+        etcdContainer.stop()
+    }
+
+    def "Put byte array" () {
+        given:
+        etcdContainer.start()
+        String key = "foo"
+        byte[] value = "bar".getBytes()
+
+        and:
+        EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
+        KVService kvService = new KVService(config)
+
+        when:
+        kvService.put(key, value)
+        byte[] ret = kvService.get(key)
+
+        then:
+        value == ret
 
         cleanup:
         etcdContainer.stop()
@@ -76,18 +99,17 @@ class KVServiceTest extends Specification {
 
         and:
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
-        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(2379)}")
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
         KVService kvService = new KVService(config)
-        ByteSequence expectedFromPut = null
 
         when:
-        ByteSequence retFromPut = kvService.put(ByteSequence.from(key, UTF_8),
-                ByteSequence.from(value, UTF_8))
-        ByteSequence ret = kvService.get(ByteSequence.from(key, UTF_8))
+        kvService.put(key, value)
+        byte[] ret = kvService.get(key)
+        String retString = new String(ret, UTF_8);
 
         then:
-        expectedFromPut ==  retFromPut
-        value.getBytes() == ret.getBytes()
+        value.getBytes() == ret
+        retString == value
 
         cleanup:
         etcdContainer.stop()
@@ -99,12 +121,11 @@ class KVServiceTest extends Specification {
         String key = "foo"
         String value = "bar"
         int numPuts = 10
-        List<ByteSequence> retFromPutList = new ArrayList<>(numPuts)
-        List<ByteSequence> retFromGetList = new ArrayList<>(numPuts)
+        List<byte[]> retFromGetList = new ArrayList<>(numPuts)
 
         and:
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
-        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(2379)}")
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
         KVService kvService = new KVService(config)
         ByteSequence expectedFromPut = null
 
@@ -112,16 +133,38 @@ class KVServiceTest extends Specification {
         for (int i = 0; i < numPuts; i++) {
             String tempKey = key + "-" + i
             String tempValue = value + "-" + i
-            ByteSequence retFromPut = kvService.put(ByteSequence.from(tempKey.getBytes()),
-                    ByteSequence.from(tempValue.getBytes()))
-            retFromPutList.add(retFromPut)
-            retFromGetList.add(kvService.get(ByteSequence.from(tempKey, UTF_8)))
+            kvService.put(tempKey, tempValue)
+            retFromGetList.add(kvService.get(tempKey))
         }
 
         then:
-        expectedFromPut ==  retFromPutList.get(0)
-        ByteSequence v = retFromGetList.get(0)
-        "${value}-0".getBytes() == ((ByteString)v.getAt("byteString")).toByteArray()
+        byte[] v = retFromGetList.get(0)
+        "${value}-0".getBytes() == v
+
+        cleanup:
+        etcdContainer.stop()
+    }
+
+    def "Put single Object" () {
+        given:
+        etcdContainer.start()
+        String key = "foo"
+        DummyObject dummyObject = new DummyObject("bar", 69)
+        byte[] value = SerializationUtils.serialize(dummyObject);
+
+        and:
+        EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
+        KVService kvService = new KVService(config)
+
+        when:
+        kvService.put(key, value)
+        byte[] ret = kvService.get(key)
+        DummyObject retDummyObject = SerializationUtils.deserialize(ret) as DummyObject
+
+        then:
+        retDummyObject.getField1() == dummyObject.getField1()
+        retDummyObject.getField2() == dummyObject.getField2()
 
         cleanup:
         etcdContainer.stop()
