@@ -70,7 +70,7 @@ public abstract class EtcdFactoryConfig {
    * Sets the comma-separated endpoints of the etcd cluster.
    * @param endpoints etcd server endpoints, at least one
    */
-  public void setEndpoints(String[] endpoints) {
+  public void setEndpoints(String... endpoints) {
     this.endpoints = endpoints;
   }
 

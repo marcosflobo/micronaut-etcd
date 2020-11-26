@@ -15,6 +15,7 @@
  */
 package io.micronaut.etcd.kv;
 
+import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.kv.GetResponse;
@@ -31,22 +32,71 @@ import java.util.concurrent.ExecutionException;
  */
 public class KVService {
 
+  /**
+   * The KV Client from jetcd.
+   */
   private final KV kvClient;
 
+  /**
+   * Constructor.
+   * @param config configuration to connect to the etcd server.
+   */
   public KVService(EtcdFactoryConfig config) {
     this.kvClient = new ClientFactory().etcdKVClient(config);
   }
 
   /**
-   * Gets information from etcd based on the key provided.
-   * @param key The key used to get a value
-   * @return {@link ByteSequence}
+   * Get a value from a key.
+   * @param key Key to search for
+   * @param getOption {@link GetOption} for the GET request
+   * @return The value as byte array
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence get (ByteSequence key) throws ExecutionException,
-      InterruptedException {
+  public byte[] get (byte[] key, GetOption getOption)
+      throws ExecutionException, InterruptedException {
+    ByteSequence ret = get(ByteSequence.from(ByteString.copyFrom(key)), getOption);
+    if (ret == null) {
+      return null;
+    }
+    return ret.getBytes();
+  }
+
+  /**
+   * Get a value from a key.
+   * @param key Key to search for
+   * @return The value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] get (byte[] key)
+      throws ExecutionException, InterruptedException {
     return get(key, GetOption.DEFAULT);
+  }
+
+  /**
+   * Get a value from a key.
+   * @param key Key to search for
+   * @param getOption {@link GetOption} for the GET request
+   * @return The value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] get (String key, GetOption getOption)
+      throws ExecutionException, InterruptedException {
+    return get(key.getBytes(), getOption);
+  }
+
+  /**
+   * Get a value from a key.
+   * @param key Key to search for
+   * @return The value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] get (String key)
+      throws ExecutionException, InterruptedException {
+    return get(key.getBytes(), GetOption.DEFAULT);
   }
 
   /**
@@ -57,7 +107,7 @@ public class KVService {
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence get (ByteSequence key, GetOption getOption) throws ExecutionException,
+  protected ByteSequence get (ByteSequence key, GetOption getOption) throws ExecutionException,
       InterruptedException {
     CompletableFuture<GetResponse> getResponseCompletableFuture = kvClient.get(key, getOption);
     GetResponse response = getResponseCompletableFuture.get();
@@ -68,37 +118,115 @@ public class KVService {
   }
 
   /**
-   *
+   * Inserts key-value.
    * @param key The key used to store the value
    * @param value The value to store
-   * @return {@link ByteSequence}
+   * @return The previous key-pair value as byte array
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence put (ByteSequence key, ByteSequence value)
+  public byte[] put (byte[] key, byte[] value)
       throws ExecutionException, InterruptedException {
-    return put(key, value, PutOption.DEFAULT);
+    return put(ByteSequence.from(ByteString.copyFrom(key)),
+        ByteSequence.from(ByteString.copyFrom(value)), PutOption.DEFAULT);
+  }
+
+  /**
+   * Inserts key-value.
+   * @param key The key used to store the value
+   * @param value The value to store
+   * @param putOption {@link PutOption} The options used to put the key/value
+   * @return The previous key-pair value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] put (byte[] key, byte[] value, PutOption putOption)
+      throws ExecutionException, InterruptedException {
+    return put(ByteSequence.from(ByteString.copyFrom(key)),
+        ByteSequence.from(ByteString.copyFrom(value)), putOption);
+  }
+
+  /**
+   * Inserts key-value.
+   * @param key The key used to store the value
+   * @param value The value to store
+   * @return The previous key-pair value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] put (String key, byte[] value)
+      throws ExecutionException, InterruptedException {
+    return put(ByteSequence.from(ByteString.copyFrom(key.getBytes())),
+        ByteSequence.from(ByteString.copyFrom(value)), PutOption.DEFAULT);
+  }
+
+  /**
+   * Inserts key-value.
+   * @param key The key used to store the value
+   * @param value The value to store
+   * @param putOption {@link PutOption} The options used to put the key/value
+   * @return The previous key-pair value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] put (String key, byte[] value, PutOption putOption)
+      throws ExecutionException, InterruptedException {
+    return put(ByteSequence.from(ByteString.copyFrom(key.getBytes())),
+        ByteSequence.from(ByteString.copyFrom(value)), putOption);
   }
 
   /**
    *
    * @param key The key used to store the value
    * @param value The value to store
-   * @param putOption The options used to put the key/value
-   * @return {@link ByteSequence}
+   * @return The previous key-pair value as byte array
    * @throws ExecutionException
    * @throws InterruptedException
    */
-  public ByteSequence put (ByteSequence key, ByteSequence value, PutOption putOption)
+  public byte[] put (String key, String value)
+      throws ExecutionException, InterruptedException {
+    return put(ByteSequence.from(ByteString.copyFrom(key.getBytes())),
+        ByteSequence.from(ByteString.copyFrom(value.getBytes())), PutOption.DEFAULT);
+  }
+
+  /**
+   * Inserts key-value.
+   * @param key The key used to store the value
+   * @param value The value to store
+   * @param putOption {@link PutOption} The options used to put the key/value
+   * @return The previous key-pair value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public byte[] put (String key, String value, PutOption putOption)
+      throws ExecutionException, InterruptedException {
+    return put(ByteSequence.from(ByteString.copyFrom(key.getBytes())),
+        ByteSequence.from(ByteString.copyFrom(value.getBytes())), putOption);
+  }
+
+  /**
+   * Inserts key-value.
+   * @param key The key used to store the value
+   * @param value The value to store
+   * @param putOption {@link PutOption} The options used to put the key/value
+   * @return The previous key-pair value as byte array
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  protected byte[] put (ByteSequence key, ByteSequence value, PutOption putOption)
       throws ExecutionException, InterruptedException {
     CompletableFuture<PutResponse> completableFuture = kvClient.put(key, value, putOption);
-    return getValueFromCompletableFuturePutResponse(completableFuture);
+    ByteSequence byteSequence = getValueFromCompletableFuturePutResponse(completableFuture);
+    if (byteSequence == null) {
+      return null;
+    }
+    return byteSequence.getBytes();
   }
 
   /**
    *
    * @param completableFuture The object handle the PUT response
-   * @return {@link ByteSequence}
+   * @return {@link ByteSequence} Of the previous key-pair value
    * @throws ExecutionException
    * @throws InterruptedException
    */
