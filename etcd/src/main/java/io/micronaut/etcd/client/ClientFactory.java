@@ -110,27 +110,13 @@ public class ClientFactory {
     if (config.getInterceptors() != null) {
       clientBuilder.interceptors(config.getInterceptors());
     }
-    if (config.getNamespace() != null) {
-      clientBuilder.namespace(config.getNamespace());
-    }
-    if (config.getRetryDelay() != 0) {
-      clientBuilder.retryDelay(config.getRetryDelay());
-    }
-    if (config.getRetryMaxDelay() != 0) {
-      clientBuilder.retryMaxDelay(config.getRetryMaxDelay());
-    }
-    if (config.getKeepaliveTimeMs() != 0) {
-      clientBuilder.keepaliveTimeMs(config.getKeepaliveTimeMs());
-    }
-    if (config.getKeepaliveTimeoutMs() != 0) {
-      clientBuilder.keepaliveTimeoutMs(config.getKeepaliveTimeoutMs());
-    }
-    if (config.getKeepaliveWithoutCalls() != null) {
-      clientBuilder.keepaliveWithoutCalls(config.getKeepaliveWithoutCalls());
-    }
-    if (config.getRetryChronoUnit() != null) {
-      clientBuilder.retryChronoUnit(config.getRetryChronoUnit());
-    }
+    clientBuilder.namespace(config.getNamespace());
+    clientBuilder.retryDelay(config.getRetryDelay());
+    clientBuilder.retryMaxDelay(config.getRetryMaxDelay());
+    clientBuilder.keepaliveTimeMs(config.getKeepaliveTimeMs());
+    clientBuilder.keepaliveTimeoutMs(config.getKeepaliveTimeoutMs());
+    clientBuilder.keepaliveWithoutCalls(config.getKeepaliveWithoutCalls());
+    clientBuilder.retryChronoUnit(config.getRetryChronoUnit());
     if (!config.getRetryMaxDuration().isEmpty()) {
       clientBuilder.retryMaxDuration(config.getRetryMaxDuration());
     }
