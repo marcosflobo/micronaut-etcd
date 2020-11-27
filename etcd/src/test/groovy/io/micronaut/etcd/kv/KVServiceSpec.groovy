@@ -127,7 +127,6 @@ class KVServiceSpec extends Specification {
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
         config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
         KVService kvService = new KVService(config)
-        ByteSequence expectedFromPut = null
 
         when:
         for (int i = 0; i < numPuts; i++) {
