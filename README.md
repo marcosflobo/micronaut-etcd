@@ -1,5 +1,6 @@
 # Micronaut etcd
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f7fe9398e9014a09970e5b2e18e39b62)](https://app.codacy.com/gh/marcosflobo/micronaut-etcd?utm_source=github.com&utm_medium=referral&utm_content=marcosflobo/micronaut-etcd&utm_campaign=Badge_Grade)
 [![Maven Central](https://img.shields.io/maven-central/v/io.micronaut.etcd/micronaut-etcd.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.micronaut.etcd%22%20AND%20a:%22micronaut-etcd%22)
 [![Build Status](https://github.com/marcosflobo/micronaut-etcd/workflows/Java%20CI/badge.svg)](https://github.com/marcosflobo/micronaut-etcd/actions)
 
