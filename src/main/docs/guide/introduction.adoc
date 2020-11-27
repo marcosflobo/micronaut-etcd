@@ -1,1 +1,1 @@
-TODO
+This project includes integration between Micronaut and https://etcd.io/[etcd]. The standard https://github.com/etcd-io/jetcd[Java Client] is used to do the actual operations with the server side.
