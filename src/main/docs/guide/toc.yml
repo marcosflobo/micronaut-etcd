@@ -1,6 +1,7 @@
 introduction:
   title: Introduction
 whatsnew: What's new
+cli: Using the Micronaut CLI
 releaseHistory: Release History
 quickStart:
   title: Quick Start

@@ -1,0 +1,16 @@
+https://etcd.org/[etcd] integration is supported. Micronaut will create several kind of client to connect to
+an existing etcd server cluster.
+
+Add the Micronaut etcd module as a dependency:
+
+[source,gradle]
+dependency:io.micronaut.etcd:micronaut-etcd::{version}[]
+
+The minimal configuration to use etcd clients is to simply declare `etcd:` with end endpoints of the
+etcd cluster (example below).
+
+[source,yaml]
+----
+hazelcast:
+  endpoints: ['121.0.0.1:2379']
+----
