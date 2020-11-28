@@ -1,1 +1,34 @@
-TODO
+Add the Micronaut etcd module as a dependency:
+
+[source,gradle]
+dependency:io.micronaut.etcd:micronaut-etcd::{version}[]
+
+=== Creating a service to get values
+
+To obtain a KV client to operate the key-value API against the etcd cluster
+
+.MyServiceManager.java
+[source,java]
+----
+@Singleton
+public class MyServiceManager {
+
+  private String endpoint = "http://localhost:2379";
+
+  public KVService getKvService () {
+    EtcdFactoryConfig config = new SingleEtcdFactoryConfig();
+    config.setEndpoints(endpoint);
+    KVService kvService = new KVService(config);
+    return kvService;
+  }
+
+  public String getValueFromKey(KVService kvService, String key) {
+    byte[] ret = kvService.get(key);
+    String retString = "";
+    if (ret != null) {
+      retString = new String(ret, UTF_8);
+    }
+    return retString;
+  }
+}
+----
