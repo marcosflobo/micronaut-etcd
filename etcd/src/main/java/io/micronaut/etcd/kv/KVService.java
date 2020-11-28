@@ -18,8 +18,10 @@ package io.micronaut.etcd.kv;
 import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
+import io.etcd.jetcd.kv.DeleteResponse;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.kv.PutResponse;
+import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.micronaut.etcd.client.ClientFactory;
@@ -221,6 +223,44 @@ public class KVService {
       return null;
     }
     return byteSequence.getBytes();
+  }
+
+  /**
+   * Deletes a key-value.
+   * @param key The key to be deleted on etcd cluster
+   * @return Number of key-value elements deleted
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public long delete (String key) throws ExecutionException, InterruptedException {
+    return delete(ByteSequence.from(ByteString.copyFrom(key.getBytes())), DeleteOption.DEFAULT);
+  }
+
+  /**
+   * Deletes a key-value with the posibily to provide deletion options
+   * @param key The key to be deleted on etcd cluster
+   * @param deleteOption {@link DeleteOption} Deletion options
+   * @return Number of key-value elements deleted
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  public long delete (String key, DeleteOption deleteOption) throws ExecutionException, InterruptedException {
+    return delete(ByteSequence.from(ByteString.copyFrom(key.getBytes())), deleteOption);
+  }
+
+  /**
+   * Deletes a key-value with the posibily to provide deletion options
+   * @param key The key to be deleted on etcd cluster
+   * @param deleteOption {@link DeleteOption} Deletion options
+   * @return Number of key-value elements deleted
+   * @throws ExecutionException
+   * @throws InterruptedException
+   */
+  protected long delete (ByteSequence key, DeleteOption deleteOption)
+      throws ExecutionException, InterruptedException {
+    CompletableFuture<DeleteResponse> completableFuture = kvClient.delete(key, deleteOption);
+    DeleteResponse deleteResponse = completableFuture.get();
+    return deleteResponse.getDeleted();
   }
 
   /**
