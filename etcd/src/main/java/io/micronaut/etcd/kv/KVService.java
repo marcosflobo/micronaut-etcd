@@ -237,7 +237,7 @@ public class KVService {
   }
 
   /**
-   * Deletes a key-value with the posibily to provide deletion options
+   * Deletes a key-value with the possibility to provide deletion options.
    * @param key The key to be deleted on etcd cluster
    * @param deleteOption {@link DeleteOption} Deletion options
    * @return Number of key-value elements deleted
@@ -249,7 +249,7 @@ public class KVService {
   }
 
   /**
-   * Deletes a key-value with the posibily to provide deletion options
+   * Deletes a key-value with the possibility to provide deletion options.
    * @param key The key to be deleted on etcd cluster
    * @param deleteOption {@link DeleteOption} Deletion options
    * @return Number of key-value elements deleted
