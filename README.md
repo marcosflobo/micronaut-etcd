@@ -13,14 +13,29 @@ This project integrates [etcd](https://etcd.io/) and [Micronaut](https://microna
 On this list you can find the supported features/services based on the
 [official etcd API reference](https://github.com/etcd-io/etcd/blob/master/Documentation/dev-guide/api_reference_v3.md).
 
-|Service|Status|Release
-|-------|-----|-------|
-|Auth|PENDING|-|
-|Key-Value|WIP|-|
-|Cluster|PENDING|-|
-|Maintenance|PENDING|-|
-|Lease|PENDING|-|
-|Watch|PENDING|-|
+### Auth
+Pending
+
+### Key-value
+|Service|Status|
+|-------|------|
+|GET (Range)|DONE|
+|PUT|DONE|
+|DELETE|DONE|
+|COMPACT|PENDING|
+|TXN|PENDING|
+
+### Cluster
+Pending
+
+### Maintenance
+PENDING
+
+### Lease
+PENDING
+
+### Watch
+PENDING
 
 More info at https://etcd.io/docs/v3.4.0/learning/api/
 

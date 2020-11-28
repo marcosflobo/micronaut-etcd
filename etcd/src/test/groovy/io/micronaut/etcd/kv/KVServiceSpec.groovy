@@ -10,7 +10,7 @@ import org.testcontainers.shaded.org.apache.commons.lang.SerializationUtils
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.google.common.base.Charsets.UTF_8;
+import static com.google.common.base.Charsets.UTF_8
 
 
 class KVServiceSpec extends Specification {
@@ -24,7 +24,7 @@ class KVServiceSpec extends Specification {
                     .withCommand("/usr/local/bin/etcd -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379")
                     .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*ready to serve client requests.*"))
 
-    def "Get service works with empty storage"() {
+    def "test Get service works with empty storage"() {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -45,7 +45,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put single integer" () {
+    def "test Put single integer" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -69,7 +69,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put byte array" () {
+    def "test Put byte array" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -91,7 +91,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put single string" () {
+    def "test Put single string" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -105,7 +105,7 @@ class KVServiceSpec extends Specification {
         when:
         kvService.put(key, value)
         byte[] ret = kvService.get(key)
-        String retString = new String(ret, UTF_8);
+        String retString = new String(ret, UTF_8)
 
         then:
         value.getBytes() == ret
@@ -115,7 +115,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put several String values" () {
+    def "test Put several String values" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -144,12 +144,12 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put single Object" () {
+    def "test Put single Object" () {
         given:
         etcdContainer.start()
         String key = "foo"
         DummyObject dummyObject = new DummyObject("bar", 69)
-        byte[] value = SerializationUtils.serialize(dummyObject);
+        byte[] value = SerializationUtils.serialize(dummyObject)
 
         and:
         EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
@@ -164,6 +164,42 @@ class KVServiceSpec extends Specification {
         then:
         retDummyObject.getField1() == dummyObject.getField1()
         retDummyObject.getField2() == dummyObject.getField2()
+
+        cleanup:
+        etcdContainer.stop()
+    }
+
+    def "test delete element from etcd" () {
+        given:
+        etcdContainer.start()
+        String key = "foo"
+        String value = "bar"
+        long expectedDeletedElements = 1
+
+        and:
+        EtcdFactoryConfig config = new SingleEtcdFactoryConfig()
+        config.setEndpoints("http://localhost:${etcdContainer.getMappedPort(originalPort)}")
+        KVService kvService = new KVService(config)
+
+        when:
+        kvService.put(key, value)
+        byte[] ret = kvService.get(key)
+        String retString = new String(ret, UTF_8)
+
+        then:
+        retString == value
+
+        when:
+        long numElementsDeleted = kvService.delete(key)
+
+        then:
+        expectedDeletedElements == numElementsDeleted
+
+        when:
+        ret = kvService.get(key)
+
+        then:
+        null == ret
 
         cleanup:
         etcdContainer.stop()
