@@ -24,7 +24,7 @@ class KVServiceSpec extends Specification {
                     .withCommand("/usr/local/bin/etcd -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379")
                     .waitingFor(new LogMessageWaitStrategy().withRegEx("(?s).*ready to serve client requests.*"))
 
-    def "Get service works with empty storage"() {
+    def "test Get service works with empty storage"() {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -45,7 +45,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put single integer" () {
+    def "test Put single integer" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -69,7 +69,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put byte array" () {
+    def "test Put byte array" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -91,7 +91,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put single string" () {
+    def "test Put single string" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -115,7 +115,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put several String values" () {
+    def "test Put several String values" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -144,7 +144,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "Put single Object" () {
+    def "test Put single Object" () {
         given:
         etcdContainer.start()
         String key = "foo"
@@ -169,7 +169,7 @@ class KVServiceSpec extends Specification {
         etcdContainer.stop()
     }
 
-    def "delete element from etc" () {
+    def "test delete element from etcd" () {
         given:
         etcdContainer.start()
         String key = "foo"
